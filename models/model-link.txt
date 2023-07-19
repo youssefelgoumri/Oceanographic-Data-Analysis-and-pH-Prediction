@@ -1,0 +1,2 @@
+The link of the RandomForest model in MediaFire : 
+https://www.mediafire.com/file/pdtmyewyl9imbaw/GridSearchRandomForest_4var-model.pkl/file
