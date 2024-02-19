@@ -6,7 +6,7 @@ from streamlit_folium import folium_static
 import mysql.connector
 
 # Load the trained model
-model = pickle.load(open('models/GridSearchRandomForest_4var-copy1.pkl', 'rb'))
+model = pickle.load(open('models/GridSearchRandomForest_4var-model.pkl', 'rb'))
 #model_3var_1 = pickle.load(open('models/_combinations1_model.pkl', 'rb'))
 #model_3var_2 = pickle.load(open('models/_combinations2_model.pkl', 'rb'))
 
@@ -55,12 +55,12 @@ def main():
     # User input form
     st.subheader('Enter the variables:')
 
+    latitude = st.number_input('Latitude')
+    longitude = st.number_input('Longitude')
     ctdtmp = st.number_input('CTDTMP [ITS-90]')
     phspht = st.number_input('PHSPHT [UMOL/KG]')
     silcat = st.number_input('SILCAT [UMOL/KG]')
     tcarbn = st.number_input('TCARBN [UMOL/KG]')
-    latitude = st.number_input('Latitude')
-    longitude = st.number_input('Longitude')
 
     # Create a dictionary of user input variables
     variables = {
@@ -73,25 +73,25 @@ def main():
     # Predict pH value
     ph_value = predict_ph(variables)
 
+    if tcarbn:
+        # Display the predicted pH value
+        st.subheader('Predicted pH Value:')
+        st.markdown(f'<p style="font-size:24px">{ph_value}</p>', unsafe_allow_html=True)
 
-    # Display the predicted pH value
-    st.subheader('Predicted pH Value:')
-    st.markdown(f'<p style="font-size:24px">{ph_value}</p>', unsafe_allow_html=True)
+        # Save data to MySQL
+        if st.button('Save'):
+            if all(variables.values()):
+                # Save data to MySQL
+                save_to_mysql(variables, latitude, longitude, ph_value)
+                st.success('Data saved successfully!')
+            else:
+                st.warning('Please enter all four variables before saving to the database.')
 
-    # Save data to MySQL
-    if st.button('Save'):
-        if all(variables.values()):
-            # Save data to MySQL
-            save_to_mysql(variables, latitude, longitude, ph_value)
-            st.success('Data saved successfully!')
-        else:
-            st.warning('Please enter all four variables before saving to the database.')
-
-    # Create a map with the user's input location
-    st.subheader('Map')
-    m = folium.Map(location=[latitude, longitude], zoom_start=10)
-    folium.Marker([latitude, longitude], popup=f'Latitude: {latitude}, Longitude: {longitude}, pH: {ph_value}').add_to(m)
-    folium_static(m)
+        # Create a map with the user's input location
+        st.subheader('Map')
+        m = folium.Map(location=[latitude, longitude], zoom_start=10)
+        folium.Marker([latitude, longitude], popup=f'Latitude: {latitude}, Longitude: {longitude}, pH: {ph_value}').add_to(m)
+        folium_static(m)
 
 
 if __name__ == '__main__':
