@@ -11,7 +11,7 @@ This repository contains the code for the Oceanographic Data Analysis and pH Pre
 ## Installation
 1. Clone the repository:
    ```
-   git clone https://github.com/your-username/oceanographic-data-prediction.git
+   git clone https://github.com/youssefelgoumri/Oceanographic-Data-Analysis-and-pH-Prediction.git
    
 2. Install the required dependencies:
    ```
